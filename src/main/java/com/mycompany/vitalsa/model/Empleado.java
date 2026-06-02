@@ -9,5 +9,8 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Empleado {
-    
+    private int legajo;
+    private String nombre;
+    private String apellido;
+    private String telefono;
 }

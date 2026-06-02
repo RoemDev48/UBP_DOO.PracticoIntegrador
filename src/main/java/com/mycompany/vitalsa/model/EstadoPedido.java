@@ -9,5 +9,5 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public enum EstadoPedido {
-    
+    PENDIENTE, CONFIRMADO, CANCELADO, ENTREGADO, NO_ENTREGADO
 }

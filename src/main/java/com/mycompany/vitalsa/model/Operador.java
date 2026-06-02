@@ -8,6 +8,6 @@ package com.mycompany.vitalsa.model;
  *
  * @author RRDev
  */
-public class Operador {
+public class Operador extends Empleado {
     
 }

@@ -1,6 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.vitalsa.model;
 
@@ -8,6 +8,7 @@ package com.mycompany.vitalsa.model;
  *
  * @author RRDev
  */
-public enum TipoPago {
-    EFECTIVO, ELECTRONICO
+public class Telefono {
+    private String numero;
+    private String tipo; 
 }

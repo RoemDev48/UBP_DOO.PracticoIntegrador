@@ -4,10 +4,17 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author RRDev
  */
 public class Factura {
-    
+    private int id;
+    private Date fecha;
+    private double total;
+    private Pedido pedido;
+    private List<DetalleFactura> detalles;
 }

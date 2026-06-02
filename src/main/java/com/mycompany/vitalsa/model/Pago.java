@@ -4,10 +4,14 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.Date;
+
 /**
  *
  * @author RRDev
  */
 public class Pago {
-    
+    private Date fecha;
+    private double monto;
+    private TipoPago tipo;
 }

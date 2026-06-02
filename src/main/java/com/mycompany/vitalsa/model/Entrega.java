@@ -4,10 +4,15 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.Date;
+
 /**
  *
  * @author RRDev
  */
 public class Entrega {
-    
+    private Date fechaEntrega;
+    private String observaciones;
+    private Pedido pedido;
+    private Distribuidor distribuidor;
 }

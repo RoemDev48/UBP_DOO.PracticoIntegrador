@@ -4,10 +4,13 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.List;
+
 /**
  *
  * @author RRDev
  */
 public class Zona {
-    
+    private String nombre;
+    private List<Barrio> barrios;
 }

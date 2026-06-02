@@ -9,5 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Cliente {
-    
+    private int id;
+    private String telefono;
+    private Direccion direccion;
 }

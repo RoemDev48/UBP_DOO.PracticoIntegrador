@@ -4,10 +4,19 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author RRDev
  */
 public class Pedido {
-    
+    private int id;
+    private Date fechaRealizacion;
+    private Date fechaEntregaEstimada;
+    private EstadoPedido estado; 
+    private Cliente cliente;
+    private Empleado operador;
+    private List<DetallePedido> items;
 }

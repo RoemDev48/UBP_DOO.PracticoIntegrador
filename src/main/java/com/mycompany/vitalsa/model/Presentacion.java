@@ -9,5 +9,8 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Presentacion {
-    
+    private String descripcion;
+    private double precio;
+    private int stock;
+    private Producto producto;
 }
