@@ -4,10 +4,14 @@
  */
 package com.mycompany.vitalsa.model;
 
+import java.util.List;
+
 /**
  *
  * @author RRDev
  */
 public class Producto {
-    private String descripcion;
+    private int id;
+    private String nombre;
+    private List<Presentacion> presentaciones;
 }

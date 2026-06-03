@@ -9,6 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Direccion {
+    private int id;
     private String calle;
     private int numeracion;
     private Barrio barrio;

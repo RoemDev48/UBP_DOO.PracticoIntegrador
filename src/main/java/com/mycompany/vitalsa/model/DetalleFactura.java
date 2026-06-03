@@ -9,6 +9,8 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class DetalleFactura {
+    private int id;
+    private Factura factura;
     private String descripcion;
     private int cantidad;
     private double precioVenta;

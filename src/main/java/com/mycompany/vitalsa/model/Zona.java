@@ -11,6 +11,8 @@ import java.util.List;
  * @author RRDev
  */
 public class Zona {
+    private int id;
     private String nombre;
     private List<Barrio> barrios;
+    private List<Distribuidor> distribuidores;
 }

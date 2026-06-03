@@ -13,10 +13,11 @@ import java.util.List;
  */
 public class Pedido {
     private int id;
-    private Date fechaRealizacion;
-    private Date fechaEntregaEstimada;
-    private EstadoPedido estado; 
-    private Cliente cliente;
     private Empleado operador;
+    private Cliente cliente;
+    private Date fechaRealizacion;
+    private EstadoPedido estado; 
+    private double montoTotal;
+    private Date fechaEntregaEstimada;
     private List<DetallePedido> items;
 }

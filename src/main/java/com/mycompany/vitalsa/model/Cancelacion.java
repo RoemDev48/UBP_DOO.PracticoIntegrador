@@ -5,18 +5,14 @@
 package com.mycompany.vitalsa.model;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  *
  * @author RRDev
  */
-public class Factura {
-    private int id;
+public class Cancelacion {
+    private int id;    
+    private String motivo;
     private Date fecha;
     private Pedido pedido;
-    private EstadoFactura estado;
-    private List<DetalleFactura> detalles;
-    private double total;
-    private Pago pago;
 }

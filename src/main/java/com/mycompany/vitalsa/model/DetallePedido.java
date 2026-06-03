@@ -9,8 +9,10 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class DetallePedido {
+    private int id;
+    private Pedido pedido;
+    private Presentacion presentacion;
     private int cantidad;
     private double precioVenta;
     private double subtotal;
-    private Presentacion presentacion;
 }

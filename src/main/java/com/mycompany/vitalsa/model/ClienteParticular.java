@@ -9,6 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class ClienteParticular {
+    private int id;
     private String nombre;
     private String apellido;
     private TipoDocumento tipoDoc;

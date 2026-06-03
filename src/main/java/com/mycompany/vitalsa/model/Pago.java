@@ -11,7 +11,9 @@ import java.util.Date;
  * @author RRDev
  */
 public class Pago {
+    private int id;
+    private Factura factura;
     private Date fecha;
-    private double monto;
     private TipoPago tipo;
+    private double monto;
 }

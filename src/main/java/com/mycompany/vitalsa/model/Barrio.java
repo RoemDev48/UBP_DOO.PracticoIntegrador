@@ -9,6 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Barrio {
+    private int id;
     private String codPostal;
     private String nombre;
     private Zona zona;

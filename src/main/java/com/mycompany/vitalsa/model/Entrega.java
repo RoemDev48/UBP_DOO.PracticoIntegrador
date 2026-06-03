@@ -11,8 +11,9 @@ import java.util.Date;
  * @author RRDev
  */
 public class Entrega {
+    private int id;
+    private Distribuidor distribuidor;
+    private Pedido pedido;
     private Date fechaEntrega;
     private String observaciones;
-    private Pedido pedido;
-    private Distribuidor distribuidor;
 }

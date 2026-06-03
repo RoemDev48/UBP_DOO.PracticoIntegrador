@@ -9,6 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Distribuidor {
+    private int id;
     private String nombre;
     private int capacidadDiaria;
     private Zona zonaACargo;

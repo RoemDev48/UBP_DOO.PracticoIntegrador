@@ -9,6 +9,7 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Telefono {
+    private int id;
     private String numero;
     private String tipo; 
 }

@@ -9,5 +9,5 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Operador extends Empleado {
-    
+    private int id;   
 }
