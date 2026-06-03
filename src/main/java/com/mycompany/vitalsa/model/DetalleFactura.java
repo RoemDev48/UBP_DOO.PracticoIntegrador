@@ -15,4 +15,16 @@ public class DetalleFactura {
     private int cantidad;
     private double precioVenta;
     private double subtotal;
+
+    public DetalleFactura() {
+    }
+
+    public DetalleFactura(int id, Factura factura, String descripcion, int cantidad, double precioVenta, double subtotal) {
+        this.id = id;
+        this.factura = factura;
+        this.descripcion = descripcion;
+        this.cantidad = cantidad;
+        this.precioVenta = precioVenta;
+        this.subtotal = subtotal;
+    }
 }

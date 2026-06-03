@@ -15,4 +15,14 @@ public class Zona {
     private String nombre;
     private List<Barrio> barrios;
     private List<Distribuidor> distribuidores;
+
+    public Zona() {
+    }
+
+    public Zona(int id, String nombre, List<Barrio> barrios, List<Distribuidor> distribuidores) {
+        this.id = id;
+        this.nombre = nombre;
+        this.barrios = barrios;
+        this.distribuidores = distribuidores;
+    }
 }

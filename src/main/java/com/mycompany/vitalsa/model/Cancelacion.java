@@ -15,4 +15,14 @@ public class Cancelacion {
     private String motivo;
     private Date fecha;
     private Pedido pedido;
+
+    public Cancelacion() {
+    }
+
+    public Cancelacion(int id, String motivo, Date fecha, Pedido pedido) {
+        this.id = id;
+        this.motivo = motivo;
+        this.fecha = fecha;
+        this.pedido = pedido;
+    }
 }

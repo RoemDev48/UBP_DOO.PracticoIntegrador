@@ -9,5 +9,11 @@ package com.mycompany.vitalsa.model;
  * @author RRDev
  */
 public class Operador extends Empleado {
-    private int id;   
+
+    public Operador() {
+    }
+
+    public Operador(int id, int legajo, String nombre, String apellido, Telefono telefono) {
+        super(id, legajo, nombre, apellido, telefono);
+    }
 }

@@ -13,4 +13,14 @@ public class Direccion {
     private String calle;
     private int numeracion;
     private Barrio barrio;
+
+    public Direccion() {
+    }
+
+    public Direccion(int id, String calle, int numeracion, Barrio barrio) {
+        this.id = id;
+        this.calle = calle;
+        this.numeracion = numeracion;
+        this.barrio = barrio;
+    }
 }

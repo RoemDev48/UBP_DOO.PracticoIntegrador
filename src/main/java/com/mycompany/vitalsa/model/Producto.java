@@ -14,4 +14,13 @@ public class Producto {
     private int id;
     private String nombre;
     private List<Presentacion> presentaciones;
+
+    public Producto() {
+    }
+
+    public Producto(int id, String nombre, List<Presentacion> presentaciones) {
+        this.id = id;
+        this.nombre = nombre;
+        this.presentaciones = presentaciones;
+    }
 }

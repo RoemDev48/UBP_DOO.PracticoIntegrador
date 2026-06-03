@@ -13,6 +13,16 @@ import java.util.List;
 public class Cliente {
     private int id;
     private Direccion direccion;
-    private String telefono;
+    private Telefono telefono;
     private List<Pedido> pedidos;
+
+    public Cliente() {
+    }
+
+    public Cliente(int id, Direccion direccion, Telefono telefono, List<Pedido> pedidos) {
+        this.id = id;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.pedidos = pedidos;
+    }
 }

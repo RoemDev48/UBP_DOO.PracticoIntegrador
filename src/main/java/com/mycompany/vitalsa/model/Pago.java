@@ -16,4 +16,15 @@ public class Pago {
     private Date fecha;
     private TipoPago tipo;
     private double monto;
+
+    public Pago() {
+    }
+
+    public Pago(int id, Factura factura, Date fecha, TipoPago tipo, double monto) {
+        this.id = id;
+        this.factura = factura;
+        this.fecha = fecha;
+        this.tipo = tipo;
+        this.monto = monto;
+    }
 }

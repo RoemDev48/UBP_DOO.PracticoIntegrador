@@ -16,4 +16,15 @@ public class Entrega {
     private Pedido pedido;
     private Date fechaEntrega;
     private String observaciones;
+
+    public Entrega() {
+    }
+
+    public Entrega(int id, Distribuidor distribuidor, Pedido pedido, Date fechaEntrega, String observaciones) {
+        this.id = id;
+        this.distribuidor = distribuidor;
+        this.pedido = pedido;
+        this.fechaEntrega = fechaEntrega;
+        this.observaciones = observaciones;
+    }
 }
