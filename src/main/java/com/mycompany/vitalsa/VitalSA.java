@@ -3,14 +3,16 @@
  */
 
 package com.mycompany.vitalsa;
+import com.mycompany.vitalsa.controller.DatabaseController;
 
 /**
  *
  * @author RRDev
  */
 public class VitalSA {
-
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        DatabaseController db = new DatabaseController();
+        db.conectar(); 
+        db.desconectar();
     }
 }
