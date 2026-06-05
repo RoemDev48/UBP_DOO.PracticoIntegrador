@@ -1,0 +1,307 @@
+/* Estilos generales para hacer la tabla más moderna */
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 40px;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 11px;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-cell-size: 55px; /* Filas más altas para darle aire */
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #F1F5F9;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #0F172A;
+}
+
+.table-cell {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 13px;
+    -fx-alignment: center-left;
+    -fx-padding: 0 10;
+}
+
+/* Badge de estado Activo */
+.badge-activo {
+    -fx-background-color: #10B981;
+    -fx-text-fill: white;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+/* Badge de estado Inactivo */
+.badge-inactivo {
+    -fx-background-color: #CBD5E1;
+    -fx-text-fill: #475569;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+/* Botones de acción invisibles de fondo */
+.action-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-text-fill: #0056b3;
+}
+
+.action-button:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 5;
+}
+
+/* ------------------------------------
+   ESTILOS DE LAYOUT Y TEXTOS
+   ------------------------------------ */
+
+.main-container {
+    -fx-background-color: #F8FAFC;
+    -fx-padding: 30;
+}
+
+.title-label {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+.btn-primary {
+    -fx-background-color: #0056b3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #004494;
+}
+
+.metric-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.metric-title {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+}
+
+.metric-value {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.metric-value-success {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10B981;
+}
+
+.table-container {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.table-header-area {
+    -fx-padding: 20;
+}
+
+.table-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+/* ------------------------------------
+   ESTILOS ESPECÍFICOS DE PRODUCTOS
+   ------------------------------------ */
+
+/* Badges de Stock */
+.badge-stock-alto {
+    -fx-background-color: #E6F4EA;
+    -fx-text-fill: #137333;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-stock-bajo {
+    -fx-background-color: #FEF7E0;
+    -fx-text-fill: #B06000;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-stock-cero {
+    -fx-background-color: #FCE8E6;
+    -fx-text-fill: #C5221F;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+/* Botones de Gestión Crítica */
+.btn-gestion-consultar {
+    -fx-background-color: #E8F0FE;
+    -fx-text-fill: #1A73E8;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 5 10;
+    -fx-cursor: hand;
+}
+
+.btn-gestion-consultar:hover {
+    -fx-background-color: #D2E3FC;
+}
+
+.btn-gestion-precio {
+    -fx-background-color: #0D9488;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 5 10;
+    -fx-cursor: hand;
+}
+
+.btn-gestion-precio:hover {
+    -fx-background-color: #0F766E;
+}
+
+/* Panel Inferior de Actualización */
+.panel-actualizacion {
+    -fx-background-color: #0369a1;
+    -fx-background-radius: 8;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.btn-panel-blanco {
+    -fx-background-color: white;
+    -fx-text-fill: #0369a1;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.btn-panel-blanco:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.btn-panel-azul {
+    -fx-background-color: #0284c7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.btn-panel-azul:hover {
+    -fx-background-color: #0369a1;
+}
+
+/* ------------------------------------
+   ESTILOS ESPECÍFICOS DE PEDIDOS
+   ------------------------------------ */
+
+.metric-icon-box {
+    -fx-padding: 10;
+    -fx-background-radius: 8;
+    -fx-alignment: center;
+}
+
+.metric-icon-box-blue { -fx-background-color: #E0F2FE; }
+.metric-icon-box-purple { -fx-background-color: #EDE9FE; }
+.metric-icon-box-green { -fx-background-color: #DCFCE7; }
+.metric-icon-box-cyan { -fx-background-color: #CCFBF1; }
+
+.badge-pedido-preparacion {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #92400E;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-pedido-enviado {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1E40AF;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-pedido-entregado {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #166534;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-pedido-pendiente {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.badge-pedido-cancelado {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #991B1B;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}

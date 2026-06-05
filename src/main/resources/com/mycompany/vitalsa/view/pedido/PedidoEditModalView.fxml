@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.vitalsa.controller.PedidoEditModalController" spacing="20" style="-fx-background-color: white; -fx-padding: 30;" prefWidth="400">
+    
+    <VBox spacing="5">
+        <Label text="Modificar Estado" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" />
+        <Label text="Actualiza el estado logístico del pedido." style="-fx-font-size: 13px; -fx-text-fill: #64748B;" />
+    </VBox>
+
+    <VBox spacing="10" style="-fx-background-color: #F8FAFC; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;">
+        <HBox>
+            <Label text="Pedido ID: " style="-fx-font-weight: bold; -fx-text-fill: #334155;" />
+            <Label fx:id="lblPedidoId" text="#000" style="-fx-text-fill: #0369a1; -fx-font-weight: bold;" />
+        </HBox>
+        <HBox>
+            <Label text="Cliente: " style="-fx-font-weight: bold; -fx-text-fill: #334155;" />
+            <Label fx:id="lblCliente" text="Nombre Cliente" style="-fx-text-fill: #475569;" />
+        </HBox>
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Estado del Pedido" style="-fx-font-weight: bold; -fx-text-fill: #334155;" />
+        <ComboBox fx:id="cmbEstado" maxWidth="Infinity" style="-fx-background-color: #F1F5F9; -fx-border-color: #CBD5E1; -fx-border-radius: 5; -fx-padding: 5;" />
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 20 0 0 0;">
+        <Button text="Cancelar" onAction="#cerrar" style="-fx-background-color: transparent; -fx-text-fill: #64748B; -fx-font-weight: bold; -fx-cursor: hand;" />
+        <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardar" style="-fx-background-color: #0369a1; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;" />
+    </HBox>
+
+</VBox>

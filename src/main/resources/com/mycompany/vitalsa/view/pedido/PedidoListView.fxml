@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.vitalsa.controller.PedidoController" spacing="20" styleClass="main-container" stylesheets="/com/mycompany/vitalsa/view/styles.css">
+
+    <!-- Top Header -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Gestión de Pedidos" styleClass="title-label" />
+            <Label text="Administra y consulta el ciclo de vida de los pedidos de clientes" styleClass="subtitle-label" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnNuevo" text="+ Nuevo Pedido" onAction="#abrirModalRegistro" styleClass="btn-primary" />
+    </HBox>
+
+    <!-- Metrics Cards -->
+    <HBox spacing="20">
+        <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10" styleClass="metric-card" maxWidth="250">
+            <Label text="PEDIDOS TOTALES" styleClass="metric-title" />
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value" />
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10" styleClass="metric-card" maxWidth="250">
+            <Label text="PENDIENTES DE ENVÍO" styleClass="metric-title" />
+            <Label fx:id="lblPendientes" text="0" styleClass="metric-value" />
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10" styleClass="metric-card" maxWidth="250">
+            <Label text="EN TRÁNSITO" styleClass="metric-title" />
+            <Label fx:id="lblTransito" text="0" styleClass="metric-value" />
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10" styleClass="metric-card" maxWidth="250">
+            <Label text="ENTREGADOS HOY" styleClass="metric-title" />
+            <Label fx:id="lblEntregados" text="0" styleClass="metric-value" />
+        </VBox>
+    </HBox>
+
+    <!-- Filters Bar -->
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 1);" maxWidth="600">
+        <FontIcon iconLiteral="fas-filter" iconSize="12" iconColor="#64748B" />
+        <ComboBox fx:id="cmbFiltroEstado" promptText="Todos los estados" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-text-fill: #334155;" />
+        <javafx.scene.control.TextField fx:id="txtBuscar" promptText="Buscar pedido, cliente, fecha..." style="-fx-pref-width: 220; -fx-padding: 5; -fx-background-radius: 4; -fx-border-color: #CBD5E1; -fx-border-radius: 4;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Exportar Reporte" onAction="#exportarReporte" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 4; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-cursor: hand;">
+            <graphic>
+                <FontIcon iconLiteral="fas-download" iconSize="12" iconColor="#64748B" />
+            </graphic>
+        </Button>
+    </HBox>
+
+    <!-- Table Area -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
+        <TableView fx:id="tablaPedidos" VBox.vgrow="ALWAYS" style="-fx-border-color: transparent;">
+            <columns>
+                <TableColumn fx:id="colId" text="ID PEDIDO" prefWidth="100.0" />
+                <TableColumn fx:id="colCliente" text="CLIENTE" prefWidth="250.0" />
+                <TableColumn fx:id="colFecha" text="FECHA REGISTRO" prefWidth="150.0" />
+                <TableColumn fx:id="colEstado" text="ESTADO" prefWidth="150.0" />
+                <TableColumn fx:id="colTotal" text="TOTAL" prefWidth="120.0" />
+                <TableColumn fx:id="colAcciones" text="" prefWidth="80.0" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </VBox>
+
+</VBox>

@@ -78,6 +78,9 @@ CREATE TABLE cliente (
     nombre_fantasia VARCHAR(150),
     razon_social VARCHAR(150),
     cuit VARCHAR(20),
+    
+    -- Estado del cliente en el sistema
+    estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
 
     FOREIGN KEY (direccion_id) REFERENCES direccion(id),
     FOREIGN KEY (telefono_id) REFERENCES telefono(id)
@@ -100,6 +103,7 @@ CREATE TABLE presentacion (
     descripcion VARCHAR(200) NOT NULL,
     precio DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     stock INT NOT NULL DEFAULT 0,
+    ultima_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (producto_id) REFERENCES producto(id)
 ) ENGINE=InnoDB;
 
@@ -125,7 +129,7 @@ CREATE TABLE pedido (
     operador_id INT NOT NULL,
     cliente_id INT NOT NULL,
     fecha_realizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('PENDIENTE', 'CONFIRMADO', 'CANCELADO', 'ENTREGADO', 'NO_ENTREGADO') NOT NULL DEFAULT 'PENDIENTE',
+    estado ENUM('PENDIENTE', 'CONFIRMADO', 'EN_PREPARACION', 'ENVIADO', 'ENTREGADO', 'NO_ENTREGADO', 'CANCELADO') NOT NULL DEFAULT 'PENDIENTE',
     monto_total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     fecha_entrega_estimada DATETIME,
     FOREIGN KEY (operador_id) REFERENCES empleado(id),

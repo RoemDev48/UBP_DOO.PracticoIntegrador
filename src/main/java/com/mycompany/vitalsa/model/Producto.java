@@ -1,15 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.vitalsa.model;
+﻿package com.mycompany.vitalsa.model;
 
 import java.util.List;
 
 /**
  *
  * @author RRDev
- */
+*/
+
+// Objeto del dominio que representa a un Producto dentro del sistema
 public class Producto {
     private int id;
     private String nombre;

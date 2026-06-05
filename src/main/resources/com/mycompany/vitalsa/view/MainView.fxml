@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.vitalsa.controller.MainController" prefWidth="1100" prefHeight="700" style="-fx-background-color: #F0F2F5;">
+
+    <!-- BARRA SUPERIOR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #0D1B2A; -fx-padding: 15 20 15 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);">
+            <VBox alignment="CENTER_LEFT">
+                <Label text="VitalSA" style="-fx-text-fill: #FFFFFF; -fx-font-size: 24px; -fx-font-weight: 700; -fx-font-family: 'Segoe UI'; -fx-letter-spacing: 2;" />
+                <Label text="Sistema de Gestión" style="-fx-text-fill: #7E9BBF; -fx-font-size: 11px; -fx-font-family: 'Segoe UI';" />
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Button fx:id="btnVolver" text="⬅ Volver al Menú Principal" onAction="#volverAlInicio" visible="false" style="-fx-background-color: #4A6580; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;" />
+            
+            <Button fx:id="btnCerrarSesion" text="Cerrar Sesión" onAction="#handleCerrarSesion" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;" />
+        </HBox>
+    </top>
+
+    <!-- PANEL CENTRAL -->
+    <center>
+        <StackPane fx:id="contentArea">
+            
+            <!-- TARJETAS DE NAVEGACION (HOME) -->
+            <VBox fx:id="welcomePane" alignment="CENTER" spacing="30" style="-fx-background-color: transparent;">
+                <Label text="Bienvenido a VitalSA" style="-fx-text-fill: #0D1B2A; -fx-font-size: 32px; -fx-font-weight: 700;" />
+                <Label text="Selecciona un módulo para comenzar a trabajar." style="-fx-text-fill: #6B7C93; -fx-font-size: 16px;" />
+
+                <HBox spacing="25" alignment="CENTER">
+                    <padding><Insets top="30"/></padding>
+
+                    <!-- Tarjeta Clientes -->
+                    <VBox alignment="CENTER" spacing="10" prefWidth="180" prefHeight="160" onMouseClicked="#handleClientes" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-cursor: hand; -fx-padding: 20;">
+                        <Label text="👤" style="-fx-font-size: 40px;"/>
+                        <Label text="Clientes" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0D1B2A;"/>
+                    </VBox>
+
+                    <!-- Tarjeta Productos -->
+                    <VBox alignment="CENTER" spacing="10" prefWidth="180" prefHeight="160" onMouseClicked="#handleProductos" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-cursor: hand; -fx-padding: 20;">
+                        <Label text="📦" style="-fx-font-size: 40px;"/>
+                        <Label text="Productos" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0D1B2A;"/>
+                    </VBox>
+
+                    <!-- Tarjeta Pedidos -->
+                    <VBox alignment="CENTER" spacing="10" prefWidth="180" prefHeight="160" onMouseClicked="#handlePedidos" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-cursor: hand; -fx-padding: 20;">
+                        <Label text="🛒" style="-fx-font-size: 40px;"/>
+                        <Label text="Pedidos" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0D1B2A;"/>
+                    </VBox>
+
+                    <!-- Tarjeta Facturación -->
+                    <VBox alignment="CENTER" spacing="10" prefWidth="180" prefHeight="160" onMouseClicked="#handleFacturacion" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-cursor: hand; -fx-padding: 20;">
+                        <Label text="🧾" style="-fx-font-size: 40px;"/>
+                        <Label text="Facturación" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0D1B2A;"/>
+                    </VBox>
+
+                    <!-- Tarjeta Logística -->
+                    <VBox alignment="CENTER" spacing="10" prefWidth="180" prefHeight="160" onMouseClicked="#handleLogistica" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-cursor: hand; -fx-padding: 20;">
+                        <Label text="🚚" style="-fx-font-size: 40px;"/>
+                        <Label text="Logística" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0D1B2A;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            
+        </StackPane>
+    </center>
+</BorderPane>

@@ -1,13 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
- */
-package com.mycompany.vitalsa.model;
+﻿package com.mycompany.vitalsa.model;
 
 /**
  *
  * @author RRDev
- */
+*/
+
+// Objeto del dominio que representa a un EstadoPedido dentro del sistema
 public enum EstadoPedido {
     PENDIENTE, CONFIRMADO, CANCELADO, ENTREGADO, NO_ENTREGADO
 }

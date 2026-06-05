@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.vitalsa.controller.PedidoModalController" spacing="20" style="-fx-background-color: #F8FAFC; -fx-padding: 30;" prefWidth="1000" prefHeight="700">
+    
+    <!-- Columna Izquierda: Selección y Catálogo (60%) -->
+    <VBox spacing="20" HBox.hgrow="ALWAYS" prefWidth="600">
+        
+        <VBox spacing="5">
+            <Label text="Nuevo Registro de Pedido" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" />
+            <Label text="Complete los campos para procesar la orden del cliente." style="-fx-font-size: 13px; -fx-text-fill: #64748B;" />
+        </VBox>
+
+        <!-- Selección de Cliente -->
+        <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Selección de Cliente" style="-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 16px;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <javafx.scene.control.Hyperlink text="+ Registrar Nuevo Cliente" onAction="#abrirModalNuevoCliente" style="-fx-text-fill: #0ea5e9; -fx-font-weight: bold; -fx-underline: true;" />
+            </HBox>
+            <ComboBox fx:id="cmbCliente" promptText="Buscar por Nombre, RUC o ID..." maxWidth="Infinity" style="-fx-padding: 5; -fx-background-color: #F1F5F9; -fx-border-color: #CBD5E1; -fx-border-radius: 5;" />
+        </VBox>
+
+        <!-- Catálogo de Productos -->
+        <VBox spacing="10" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;">
+            <Label text="Catálogo de Productos" style="-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 16px;" />
+            
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <FlowPane fx:id="panelCatalogo" hgap="15" vgap="15" />
+            </ScrollPane>
+        </VBox>
+        
+    </VBox>
+
+    <!-- Columna Derecha: Resumen del Pedido (40%) -->
+    <VBox spacing="15" prefWidth="350" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;">
+        
+        <Label text="Resumen del Pedido" style="-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 18px;" />
+        
+        <!-- Carrito de Compras -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox fx:id="panelCarrito" spacing="15" />
+        </ScrollPane>
+
+        <!-- Observaciones -->
+        <VBox spacing="5">
+            <Label fx:id="lblTiempoEstimado" style="-fx-font-size: 13px; -fx-text-fill: #10B981; -fx-font-weight: bold; -fx-padding: 0 0 10 0;" />
+            <Label text="Registrar Observación" style="-fx-text-fill: #64748B; -fx-font-size: 12px;" />
+            <TextArea fx:id="txtObservacion" promptText="Ej: Entrega preferente por la mañana..." prefRowCount="3" style="-fx-border-color: #E2E8F0; -fx-border-radius: 4;" />
+        </VBox>
+
+        <!-- Totales -->
+        <VBox spacing="10" style="-fx-padding: 15 0 0 0; -fx-border-color: #E2E8F0 transparent transparent transparent; -fx-border-width: 1 0 0 0;">
+            <HBox>
+                <Label text="Subtotal" style="-fx-text-fill: #475569;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblSubtotal" text="0.00" style="-fx-text-fill: #1E293B;" />
+            </HBox>
+            <HBox>
+                <Label text="TOTAL" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0369a1;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblTotal" text="0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0369a1;" />
+            </HBox>
+        </VBox>
+
+        <!-- Botones de Acción -->
+        <VBox spacing="10" style="-fx-padding: 10 0 0 0;">
+            <Button fx:id="btnGuardar" text="Guardar Pedido" onAction="#guardarPedido" maxWidth="Infinity" style="-fx-background-color: #0369a1; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 6; -fx-cursor: hand;" />
+            <Button fx:id="btnCancelar" text="Cancelar" onAction="#cerrar" maxWidth="Infinity" style="-fx-background-color: white; -fx-text-fill: #991B1B; -fx-border-color: #FCA5A5; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 6; -fx-cursor: hand;" />
+        </VBox>
+
+    </VBox>
+
+</HBox>

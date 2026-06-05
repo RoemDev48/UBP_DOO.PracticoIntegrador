@@ -1,8 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.vitalsa.model;
+﻿package com.mycompany.vitalsa.model;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +6,9 @@ import java.util.List;
 /**
  *
  * @author RRDev
- */
+*/
+
+// Objeto del dominio que representa a un Factura dentro del sistema
 public class Factura {
     private int id;
     private Date fecha;
