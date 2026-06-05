@@ -1,4 +1,4 @@
-﻿package com.mycompany.vitalsa.model;
+package com.mycompany.vitalsa.model;
 
 import java.util.List;
 
@@ -23,4 +23,16 @@ public class Cliente {
         this.telefono = telefono;
         this.pedidos = pedidos;
     }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    
+    public Direccion getDireccion() { return direccion; }
+    public void setDireccion(Direccion direccion) { this.direccion = direccion; }
+    
+    public Telefono getTelefono() { return telefono; }
+    public void setTelefono(Telefono telefono) { this.telefono = telefono; }
+    
+    public List<Pedido> getPedidos() { return pedidos; }
+    public void setPedidos(List<Pedido> pedidos) { this.pedidos = pedidos; }
 }

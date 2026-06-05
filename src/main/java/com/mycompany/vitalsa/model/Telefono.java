@@ -1,4 +1,4 @@
-﻿package com.mycompany.vitalsa.model;
+package com.mycompany.vitalsa.model;
 
 /**
  *
@@ -19,4 +19,13 @@ public class Telefono {
         this.numero = numero;
         this.tipo = tipo;
     }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    
+    public String getNumero() { return numero; }
+    public void setNumero(String numero) { this.numero = numero; }
+    
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 }

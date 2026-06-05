@@ -14,11 +14,7 @@ public class CalculoMayoristaStrategy implements ICalculoTotalStrategy {
 
     @Override
     public double calcularTotal(List<DetallePedidoDTO> carrito) {
-        double total = 0;
-        for (DetallePedidoDTO d : carrito) {
-            total += (d.getPrecioUnitario() * d.getCantidad());
-        }
-        
-        return total - (total * DESCUENTO);
+        double subtotal = calcularSubtotal(carrito);
+        return subtotal - (subtotal * DESCUENTO);
     }
 }

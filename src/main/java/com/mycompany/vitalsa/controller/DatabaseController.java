@@ -18,15 +18,15 @@ public class DatabaseController {
 
     private static final String URL = "jdbc:mysql://localhost:3306/vitalsa_db?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";
-    private static final String PASSWORD = ""; // Por defecto en XAMPP es vacío
+    private static final String PASSWORD = ""; // Por defecto en XAMPP es vacÃƒÂ­o
 
     private Connection conexion;
 
-    public void conectar() {
+    private void conectar() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Conexión exitosa a la base de datos.");
+            System.out.println("ConexiÃƒÂ³n exitosa a la base de datos.");
             
             try (java.sql.Statement stmt = conexion.createStatement()) {
                 stmt.execute("ALTER TABLE cliente ADD COLUMN estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO'");
@@ -45,22 +45,29 @@ public class DatabaseController {
             } catch (SQLException e) {}
             
         } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("Error de conexión: " + e.getMessage());
+            System.err.println("Error de conexiÃƒÂ³n: " + e.getMessage());
         }
     }
 
-    public void desconectar() {
+    private void desconectar() {
         try {
             if (conexion != null && !conexion.isClosed()) {
                 conexion.close();
-                System.out.println("Conexión cerrada.");
+                System.out.println("ConexiÃƒÂ³n cerrada.");
             }
         } catch (SQLException e) {
-            System.err.println("Error al cerrar conexión: " + e.getMessage());
+            System.err.println("Error al cerrar conexiÃƒÂ³n: " + e.getMessage());
         }
     }
     
-    public Connection getConexion() {
+    private Connection getConexionSegura() {
+        try {
+            if (conexion == null || conexion.isClosed()) {
+                conectar();
+            }
+        } catch (SQLException e) {
+            conectar();
+        }
         return conexion;
     }
 
@@ -70,7 +77,7 @@ public class DatabaseController {
 
     public List<ClienteDTO> obtenerClientes() {
         List<ClienteDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         
         String sql = "SELECT c.id, c.tipo_cliente, c.nombre, c.apellido, c.nro_doc, c.nombre_fantasia, c.razon_social, c.cuit, c.estado, " +
                      "d.calle, d.numeracion, b.zona_id, z.nombre AS zona_nombre, t.numero AS telefono, t.tipo AS tipo_telefono, " +
@@ -127,7 +134,7 @@ public class DatabaseController {
     }
 
     public boolean cambiarEstadoCliente(int id, String nuevoEstado) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "UPDATE cliente SET estado = ? WHERE id = ?";
         try (java.sql.PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, nuevoEstado);
@@ -141,7 +148,7 @@ public class DatabaseController {
 
     public List<ZonaDTO> obtenerZonas() {
         List<ZonaDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT id, nombre FROM zona";
         try (java.sql.Statement stmt = conexion.createStatement();
              java.sql.ResultSet rs = stmt.executeQuery(sql)) {
@@ -154,8 +161,8 @@ public class DatabaseController {
         return lista;
     }
 
-    public boolean insertarCliente(String tipo, String nombre, String doc, String dir, int numCalle, int zonaId, String tel, String tipoTel) {
-        if (conexion == null) conectar();
+    public boolean insertarCliente(Cliente cliente, int zonaId) {
+        getConexionSegura();
         try {
             conexion.setAutoCommit(false); 
             
@@ -163,29 +170,26 @@ public class DatabaseController {
             int dirId = -1;
             int barrioId = 1; 
             
-            // TODO: por ahora hardcodeamos el primer barrio de la zona, a futuro estaría bueno que el usuario elija el barrio exacto
             String sqlBarrio = "SELECT id FROM barrio WHERE zona_id = " + zonaId + " LIMIT 1";
             try (java.sql.Statement stmt = conexion.createStatement();
                  java.sql.ResultSet rs = stmt.executeQuery(sqlBarrio)) {
                 if (rs.next()) barrioId = rs.getInt("id");
             }
             
-            // 1. Primero metemos el teléfono en la DB para generar el ID
             String sqlTel = "INSERT INTO telefono (numero, tipo) VALUES (?, ?)";
             try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlTel, java.sql.Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, tel);
-                ps.setString(2, tipoTel);
+                ps.setString(1, cliente.getTelefono().getNumero());
+                ps.setString(2, cliente.getTelefono().getTipo());
                 ps.executeUpdate();
                 try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) telId = rs.getInt(1);
                 }
             }
             
-            // 2. Ahora armamos la dirección usando el barrio que encontramos arriba
             String sqlDir = "INSERT INTO direccion (calle, numeracion, barrio_id) VALUES (?, ?, ?)";
             try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlDir, java.sql.Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, dir);
-                ps.setInt(2, numCalle);
+                ps.setString(1, cliente.getDireccion().getCalle());
+                ps.setInt(2, cliente.getDireccion().getNumeracion());
                 ps.setInt(3, barrioId);
                 ps.executeUpdate();
                 try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
@@ -193,21 +197,27 @@ public class DatabaseController {
                 }
             }
             
-            // 3. Finalmente guardamos al cliente uniendo todas las FK (ojo con el tipo de cliente)
             String sqlCli;
-            if ("PARTICULAR".equals(tipo)) {
-                sqlCli = "INSERT INTO cliente (tipo_cliente, direccion_id, telefono_id, nombre, apellido, tipo_documento, nro_doc) VALUES (?, ?, ?, ?, '', 'DNI', ?)";
-            } else {
-                sqlCli = "INSERT INTO cliente (tipo_cliente, direccion_id, telefono_id, razon_social, nombre_fantasia, cuit) VALUES (?, ?, ?, ?, '', ?)";
-            }
-            
-            try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
-                ps.setString(1, tipo);
-                if (dirId != -1) ps.setInt(2, dirId); else ps.setNull(2, java.sql.Types.INTEGER);
-                if (telId != -1) ps.setInt(3, telId); else ps.setNull(3, java.sql.Types.INTEGER);
-                ps.setString(4, nombre);
-                ps.setString(5, doc);
-                ps.executeUpdate();
+            if (cliente instanceof ClienteParticular) {
+                ClienteParticular cp = (ClienteParticular) cliente;
+                sqlCli = "INSERT INTO cliente (tipo_cliente, direccion_id, telefono_id, nombre, apellido, tipo_documento, nro_doc) VALUES ('PARTICULAR', ?, ?, ?, '', 'DNI', ?)";
+                try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
+                    if (dirId != -1) ps.setInt(1, dirId); else ps.setNull(1, java.sql.Types.INTEGER);
+                    if (telId != -1) ps.setInt(2, telId); else ps.setNull(2, java.sql.Types.INTEGER);
+                    ps.setString(3, cp.getNombre());
+                    ps.setString(4, cp.getNroDoc());
+                    ps.executeUpdate();
+                }
+            } else if (cliente instanceof ClienteEmpresa) {
+                ClienteEmpresa ce = (ClienteEmpresa) cliente;
+                sqlCli = "INSERT INTO cliente (tipo_cliente, direccion_id, telefono_id, razon_social, nombre_fantasia, cuit) VALUES ('EMPRESA', ?, ?, ?, '', ?)";
+                try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
+                    if (dirId != -1) ps.setInt(1, dirId); else ps.setNull(1, java.sql.Types.INTEGER);
+                    if (telId != -1) ps.setInt(2, telId); else ps.setNull(2, java.sql.Types.INTEGER);
+                    ps.setString(3, ce.getRazonSocial());
+                    ps.setString(4, ce.getCuit());
+                    ps.executeUpdate();
+                }
             }
             
             conexion.commit();
@@ -223,7 +233,7 @@ public class DatabaseController {
 
     public List<ProductoDTO> obtenerProductos() {
         List<ProductoDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         
         // Traemos todos los productos (con join a presentacion porque es lo que vendemos)
         String sql = "SELECT pr.id, p.nombre AS categoria, pr.descripcion AS nombre, pr.precio, pr.stock " +
@@ -249,20 +259,20 @@ public class DatabaseController {
         return lista;
     }
 
-    // Cuenta cuántos productos tenemos dados de alta
+    // Cuenta cuÃƒÂ¡ntos productos tenemos dados de alta
     public int contarProductosActivos() {
         return contar("SELECT COUNT(*) FROM presentacion");
     }
 
 
     // Actualiza los datos de un cliente (medio lio porque toca actualizar varias tablas)
-    public boolean actualizarCliente(int id, String tipo, String nombre, String doc, String dir, int numCalle, int zonaId, String tel, String tipoTel) {
-        if (conexion == null) conectar();
+    public boolean actualizarCliente(Cliente cliente, int zonaId) {
+        getConexionSegura();
         try {
             conexion.setAutoCommit(false);
             
             int telId = -1, dirId = -1;
-            String sqlSel = "SELECT telefono_id, direccion_id FROM cliente WHERE id = " + id;
+            String sqlSel = "SELECT telefono_id, direccion_id FROM cliente WHERE id = " + cliente.getId();
             try (java.sql.Statement s = conexion.createStatement(); java.sql.ResultSet rs = s.executeQuery(sqlSel)) {
                 if (rs.next()) {
                     telId = rs.getInt("telefono_id");
@@ -273,7 +283,9 @@ public class DatabaseController {
             if (telId != -1) {
                 String sqlTel = "UPDATE telefono SET numero = ?, tipo = ? WHERE id = ?";
                 try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlTel)) {
-                    ps.setString(1, tel); ps.setString(2, tipoTel); ps.setInt(3, telId);
+                    ps.setString(1, cliente.getTelefono().getNumero()); 
+                    ps.setString(2, cliente.getTelefono().getTipo()); 
+                    ps.setInt(3, telId);
                     ps.executeUpdate();
                 }
             }
@@ -286,17 +298,33 @@ public class DatabaseController {
                 }
                 String sqlDir = "UPDATE direccion SET calle = ?, numeracion = ?, barrio_id = ? WHERE id = ?";
                 try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlDir)) {
-                    ps.setString(1, dir); ps.setInt(2, numCalle); ps.setInt(3, barrioId); ps.setInt(4, dirId);
+                    ps.setString(1, cliente.getDireccion().getCalle()); 
+                    ps.setInt(2, cliente.getDireccion().getNumeracion()); 
+                    ps.setInt(3, barrioId); 
+                    ps.setInt(4, dirId);
                     ps.executeUpdate();
                 }
             }
             
-            String sqlCli = "PARTICULAR".equals(tipo) 
-                ? "UPDATE cliente SET tipo_cliente = ?, nombre = ?, nro_doc = ? WHERE id = ?"
-                : "UPDATE cliente SET tipo_cliente = ?, razon_social = ?, cuit = ? WHERE id = ?";
-            try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
-                ps.setString(1, tipo); ps.setString(2, nombre); ps.setString(3, doc); ps.setInt(4, id);
-                ps.executeUpdate();
+            String sqlCli;
+            if (cliente instanceof ClienteParticular) {
+                ClienteParticular cp = (ClienteParticular) cliente;
+                sqlCli = "UPDATE cliente SET tipo_cliente = 'PARTICULAR', nombre = ?, nro_doc = ? WHERE id = ?";
+                try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
+                    ps.setString(1, cp.getNombre()); 
+                    ps.setString(2, cp.getNroDoc()); 
+                    ps.setInt(3, cliente.getId());
+                    ps.executeUpdate();
+                }
+            } else if (cliente instanceof ClienteEmpresa) {
+                ClienteEmpresa ce = (ClienteEmpresa) cliente;
+                sqlCli = "UPDATE cliente SET tipo_cliente = 'EMPRESA', razon_social = ?, cuit = ? WHERE id = ?";
+                try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCli)) {
+                    ps.setString(1, ce.getRazonSocial()); 
+                    ps.setString(2, ce.getCuit()); 
+                    ps.setInt(3, cliente.getId());
+                    ps.executeUpdate();
+                }
             }
             
             conexion.commit();
@@ -320,7 +348,7 @@ public class DatabaseController {
     }
 
     private int contar(String sql) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         try (java.sql.Statement stmt = conexion.createStatement(); java.sql.ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException e) {}
@@ -333,11 +361,11 @@ public class DatabaseController {
     }
 
     public String obtenerTiempoUltimaActualizacion() {
-        if (conexion == null) conectar();
+        getConexionSegura();
         // Magia de MySQL: usamos TIMESTAMPDIFF para sacar los minutos directos
         String sql = "SELECT TIMESTAMPDIFF(MINUTE, MAX(fecha_realizacion), NOW()) as mins FROM pedido";
         
-        // Verificamos si existe la columna en tiempo de ejecución (si no, la creamos)
+        // Verificamos si existe la columna en tiempo de ejecuciÃƒÂ³n (si no, la creamos)
         try (java.sql.Statement checkStmt = conexion.createStatement()) {
             checkStmt.executeQuery("SELECT ultima_actualizacion FROM presentacion LIMIT 1");
         } catch (SQLException e) {
@@ -361,7 +389,7 @@ public class DatabaseController {
                 if (horas < 24) return "Hace " + horas + " h";
                 
                 int dias = horas / 24;
-                return "Hace " + dias + " días";
+                return "Hace " + dias + " dÃƒÂ­as";
             }
         } catch (SQLException e) {
             System.err.println("Error al calcular tiempo: " + e.getMessage());
@@ -370,9 +398,9 @@ public class DatabaseController {
     }
 
     public boolean insertarProducto(String categoria, String nombre, double precio, int stock) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         try {
-            // Buscamos si ya existe la categoría (producto padre)
+            // Buscamos si ya existe la categorÃƒÂ­a (producto padre)
             int productoId = -1;
             String sqlBusqueda = "SELECT id FROM producto WHERE nombre = '" + categoria + "'";
             try (java.sql.Statement stmt = conexion.createStatement();
@@ -382,7 +410,7 @@ public class DatabaseController {
                 }
             }
 
-            // Si no existe la categoría, la creamos al vuelo
+            // Si no existe la categorÃƒÂ­a, la creamos al vuelo
             if (productoId == -1) {
                 String sqlInsertProducto = "INSERT INTO producto (nombre) VALUES ('" + categoria + "')";
                 try (java.sql.Statement stmt = conexion.createStatement()) {
@@ -393,7 +421,7 @@ public class DatabaseController {
                 }
             }
 
-            // Ahora si, insertamos la presentación con su precio y stock
+            // Ahora si, insertamos la presentaciÃƒÂ³n con su precio y stock
             if (productoId != -1) {
                 String sqlInsert = "INSERT INTO presentacion (producto_id, descripcion, precio, stock) VALUES (" +
                                    productoId + ", '" + nombre + "', " + precio + ", " + stock + ")";
@@ -410,7 +438,7 @@ public class DatabaseController {
 
     // Actualiza solo el precio de un producto (desde el modal)
     public boolean actualizarPrecio(int id, double nuevoPrecio) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "UPDATE presentacion SET precio = " + nuevoPrecio + " WHERE id = " + id;
         try (java.sql.Statement stmt = conexion.createStatement()) {
             return stmt.executeUpdate(sql) > 0;
@@ -420,14 +448,14 @@ public class DatabaseController {
         }
     }
 
-    // ================= MÉTODOS DE PEDIDOS (Acá arranca lo complejo) ================= //
+    // ================= MÃƒâ€°TODOS DE PEDIDOS (AcÃƒÂ¡ arranca lo complejo) ================= //
 
     // KPIs generales para el tablero de pedidos
     public int contarPedidosTotales() {
         return contar("SELECT COUNT(*) FROM pedido");
     }
 
-    // Pedidos que están pendientes de armado
+    // Pedidos que estÃƒÂ¡n pendientes de armado
     public int contarPedidosPendientes() {
         return contar("SELECT COUNT(*) FROM pedido WHERE estado = 'PENDIENTE'");
     }
@@ -444,7 +472,7 @@ public class DatabaseController {
 
     // Cambia el estado de un pedido (ej: de PENDIENTE a ENVIADO)
     public boolean cambiarEstadoPedido(int id, String nuevoEstado) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "UPDATE pedido SET estado = ? WHERE id = ?";
         try (java.sql.PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, nuevoEstado);
@@ -459,7 +487,7 @@ public class DatabaseController {
     // Trae los pedidos pero filtrados por la combobox de arriba
     public List<com.mycompany.vitalsa.dto.PedidoDTO> obtenerPedidos(String filtroEstado) {
         List<com.mycompany.vitalsa.dto.PedidoDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         
         try (java.sql.Statement alterStmt = conexion.createStatement()) {
             alterStmt.executeUpdate("ALTER TABLE pedido MODIFY COLUMN estado ENUM('PENDIENTE', 'CONFIRMADO', 'EN_PREPARACION', 'ENVIADO', 'ENTREGADO', 'NO_ENTREGADO', 'CANCELADO') NOT NULL DEFAULT 'PENDIENTE'");
@@ -509,9 +537,9 @@ public class DatabaseController {
         return lista;
     }
 
-    // Guarda el pedido y sus detalles todo en una misma transacción para no romper nada
+    // Guarda el pedido y sus detalles todo en una misma transacciÃƒÂ³n para no romper nada
     public int guardarPedidoConRetorno(int clienteId, int operadorId, double montoTotal, List<com.mycompany.vitalsa.dto.DetallePedidoDTO> detalles) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         try {
             conexion.setAutoCommit(false);
             
@@ -578,7 +606,7 @@ public class DatabaseController {
 
     // Registra una factura nueva (por defecto entra como PENDIENTE de pago)
     public boolean generarFacturaPendiente(int pedidoId, double total) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "INSERT INTO factura (pedido_id, estado, total) VALUES (?, 'PENDIENTE', ?)";
         try (java.sql.PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, pedidoId);
@@ -590,10 +618,10 @@ public class DatabaseController {
         }
     }
 
-    // Recupera el detalle de un pedido (útil para el modal de edición)
+    // Recupera el detalle de un pedido (ÃƒÂºtil para el modal de ediciÃƒÂ³n)
     public List<com.mycompany.vitalsa.dto.DetallePedidoDTO> obtenerDetallesPedido(int pedidoId) {
         List<com.mycompany.vitalsa.dto.DetallePedidoDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT dp.presentacion_id, pr.descripcion AS nombre, dp.precio_venta, dp.cantidad " +
                      "FROM detalle_pedido dp " +
                      "JOIN presentacion pr ON dp.presentacion_id = pr.id " +
@@ -616,9 +644,9 @@ public class DatabaseController {
         return lista;
     }
 
-    // Esto se llama al editar un pedido completo. Hacemos la fácil: borramos todo y volvemos a insertar.
+    // Esto se llama al editar un pedido completo. Hacemos la fÃƒÂ¡cil: borramos todo y volvemos a insertar.
     public boolean actualizarPedidoCompleto(int pedidoId, double montoTotal, List<com.mycompany.vitalsa.dto.DetallePedidoDTO> nuevosDetalles) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         try {
             conexion.setAutoCommit(false);
             
@@ -679,15 +707,15 @@ public class DatabaseController {
         }
     }
 
-    // ================= MÉTODOS DE LOGÍSTICA (Gestión de envíos) ================= //
+    // ================= MÃƒâ€°TODOS DE LOGÃƒÂSTICA (GestiÃƒÂ³n de envÃƒÂ­os) ================= //
 
-    // Trae los pedidos que ya están listos para salir pero aún no tienen camión asignado
+    // Trae los pedidos que ya estÃƒÂ¡n listos para salir pero aÃƒÂºn no tienen camiÃƒÂ³n asignado
     public List<com.mycompany.vitalsa.dto.LogisticaPedidoPendienteDTO> obtenerPedidosPendientesLogistica() {
         List<com.mycompany.vitalsa.dto.LogisticaPedidoPendienteDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT p.id, p.fecha_realizacion, " +
                      "COALESCE(z.nombre, 'Sin Zona') AS zona_destino, " +
-                     "COALESCE(CONCAT(d.calle, ' ', d.numeracion), 'Sin Dirección') AS direccion " +
+                     "COALESCE(CONCAT(d.calle, ' ', d.numeracion), 'Sin DirecciÃƒÂ³n') AS direccion " +
                      "FROM pedido p " +
                      "JOIN cliente c ON p.cliente_id = c.id " +
                      "LEFT JOIN direccion d ON c.direccion_id = d.id " +
@@ -719,15 +747,15 @@ public class DatabaseController {
                 lista.add(new com.mycompany.vitalsa.dto.LogisticaPedidoPendienteDTO(id, sku, zona, dir, tiempoEspera, tags));
             }
         } catch (java.sql.SQLException e) {
-            System.err.println("Error al obtener pedidos pendientes para logística: " + e.getMessage());
+            System.err.println("Error al obtener pedidos pendientes para logÃƒÂ­stica: " + e.getMessage());
         }
         return lista;
     }
 
-    // Lista los camiones/distribuidores y calcula qué tan llenos están en porcentaje
+    // Lista los camiones/distribuidores y calcula quÃƒÂ© tan llenos estÃƒÂ¡n en porcentaje
     public List<com.mycompany.vitalsa.dto.DistribuidorCargaDTO> obtenerDistribuidoresLogistica() {
         List<com.mycompany.vitalsa.dto.DistribuidorCargaDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT d.id, d.nombre, z.nombre AS zona_cargo, d.capacidad_diaria, " +
                      "(SELECT COUNT(*) FROM pedido p WHERE p.distribuidor_id = d.id AND p.estado IN ('EN_PREPARACION', 'ENVIADO', 'ENTREGADO') AND DATE(p.fecha_realizacion) = CURDATE()) AS asignados " +
                      "FROM distribuidor d " +
@@ -748,15 +776,15 @@ public class DatabaseController {
                 lista.add(new com.mycompany.vitalsa.dto.DistribuidorCargaDTO(id, nombre, zona, porcentaje, asignados, capacidad));
             }
         } catch (java.sql.SQLException e) {
-            System.err.println("Error al obtener distribuidores para logística: " + e.getMessage());
+            System.err.println("Error al obtener distribuidores para logÃƒÂ­stica: " + e.getMessage());
         }
         return lista;
     }
 
-    // Trae los pedidos que están literal en la calle
+    // Trae los pedidos que estÃƒÂ¡n literal en la calle
     public List<com.mycompany.vitalsa.dto.EnvioTransitoDTO> obtenerEnviosEnTransito() {
         List<com.mycompany.vitalsa.dto.EnvioTransitoDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT p.id, p.estado, d.nombre AS distribuidor_nombre, z.nombre AS zona_ruta " +
                      "FROM pedido p " +
                      "JOIN distribuidor d ON p.distribuidor_id = d.id " +
@@ -780,7 +808,7 @@ public class DatabaseController {
                 lista.add(new com.mycompany.vitalsa.dto.EnvioTransitoDTO(id, sku, distribuidor, zona, estado));
             }
         } catch (java.sql.SQLException e) {
-            System.err.println("Error al obtener envíos en tránsito: " + e.getMessage());
+            System.err.println("Error al obtener envÃƒÂ­os en trÃƒÂ¡nsito: " + e.getMessage());
         }
         return lista;
     }
@@ -788,7 +816,7 @@ public class DatabaseController {
     // Agarra los pedidos marcados y se los enchufa a un repartidor
     public boolean asignarPedidosADistribuidor(List<Integer> pedidosIds, int distribuidorId) {
         if (pedidosIds == null || pedidosIds.isEmpty()) return false;
-        if (conexion == null) conectar();
+        getConexionSegura();
         try {
             conexion.setAutoCommit(false);
             String sql = "UPDATE pedido SET distribuidor_id = ?, estado = 'ENVIADO' WHERE id = ?";
@@ -811,13 +839,13 @@ public class DatabaseController {
         }
     }
 
-    // ================= MÉTODOS DE FACTURACIÓN (La plata) ================= //
+    // ================= MÃƒâ€°TODOS DE FACTURACIÃƒâ€œN (La plata) ================= //
 
-    // Calcula los numeritos de arriba en la pantalla de facturación
+    // Calcula los numeritos de arriba en la pantalla de facturaciÃƒÂ³n
     public com.mycompany.vitalsa.dto.FacturacionKpiDTO obtenerKpisFacturacion() {
-        if (conexion == null) conectar();
+        getConexionSegura();
         double totalMes = 0.0;
-        double crecimientoPct = 12.4; // TODO: Esto quedó hardcodeado, nos faltó tiempo para la lógica real vs mes pasado
+        double crecimientoPct = 12.4; // TODO: Esto quedÃƒÂ³ hardcodeado, nos faltÃƒÂ³ tiempo para la lÃƒÂ³gica real vs mes pasado
         double cuentasCobrar = 0.0;
         int pendientes = 0;
         int verificados = 0;
@@ -825,7 +853,7 @@ public class DatabaseController {
         double cobradoHoy = 0.0;
         
         try {
-            // Truquito: si la tabla de facturas está vacía, inventamos algunas de prueba en base a los pedidos
+            // Truquito: si la tabla de facturas estÃƒÂ¡ vacÃƒÂ­a, inventamos algunas de prueba en base a los pedidos
             try (java.sql.Statement s = conexion.createStatement(); 
                  java.sql.ResultSet rs = s.executeQuery("SELECT COUNT(*) FROM factura")) {
                 if (rs.next() && rs.getInt(1) == 0) {
@@ -866,7 +894,7 @@ public class DatabaseController {
     // Trae las facturas para cargar la tabla principal
     public List<com.mycompany.vitalsa.dto.FacturaRecienteDTO> obtenerFacturasEmitidas() {
         List<com.mycompany.vitalsa.dto.FacturaRecienteDTO> lista = new ArrayList<>();
-        if (conexion == null) conectar();
+        getConexionSegura();
         String sql = "SELECT f.id, f.estado, " +
                      "COALESCE(NULLIF(c.nombre_fantasia, ''), NULLIF(c.razon_social, ''), CONCAT(c.nombre, ' ', c.apellido)) AS cliente_nombre " +
                      "FROM factura f " +
@@ -880,7 +908,7 @@ public class DatabaseController {
                 String sku = String.format("#F-2024-%04d", id);
                 String estado = rs.getString("estado");
                 String cliente = rs.getString("cliente_nombre");
-                if (cliente == null || cliente.trim().isEmpty()) cliente = "Cliente Múltiple";
+                if (cliente == null || cliente.trim().isEmpty()) cliente = "Cliente MÃƒÂºltiple";
                 
                 lista.add(new com.mycompany.vitalsa.dto.FacturaRecienteDTO(id, sku, cliente, estado));
             }
@@ -890,9 +918,9 @@ public class DatabaseController {
         return lista;
     }
 
-    // Pasa una factura a PAGADA (recibe el número de código o el ID crudo)
+    // Pasa una factura a PAGADA (recibe el nÃƒÂºmero de cÃƒÂ³digo o el ID crudo)
     public boolean registrarPagoFactura(String idOCodigo, String metodoPago) {
-        if (conexion == null) conectar();
+        getConexionSegura();
         int idReal = -1;
         try {
             if (idOCodigo.startsWith("#F-2024-")) {
@@ -913,5 +941,98 @@ public class DatabaseController {
             System.err.println("Error al registrar pago: " + e.getMessage());
             return false;
         }
+    }
+
+    public com.mycompany.vitalsa.dto.FacturaCompletaDTO obtenerDetalleCompletoFactura(int facturaId) {
+        getConexionSegura();
+        com.mycompany.vitalsa.dto.FacturaCompletaDTO dto = null;
+        try {
+            // First query to get Invoice and Client details
+            String sqlCabecera = 
+                "SELECT f.fecha, f.total, c.tipo_cliente, c.nombre, c.apellido, c.razon_social, c.nombre_fantasia, " +
+                "c.nro_doc, c.cuit, d.calle, d.numeracion, b.nombre AS barrio_nombre, p.id AS pedido_id " +
+                "FROM factura f " +
+                "JOIN pedido p ON f.pedido_id = p.id " +
+                "JOIN cliente c ON p.cliente_id = c.id " +
+                "LEFT JOIN direccion d ON c.direccion_id = d.id " +
+                "LEFT JOIN barrio b ON d.barrio_id = b.id " +
+                "WHERE f.id = ?";
+                
+            java.time.LocalDate fecha = java.time.LocalDate.now();
+            double total = 0;
+            String tipoCliente = "";
+            String nombreCli = "";
+            String domicilio = "";
+            String localidad = "";
+            String documento = "";
+            int pedidoId = -1;
+            
+            try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlCabecera)) {
+                ps.setInt(1, facturaId);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        java.sql.Date dbDate = rs.getDate("fecha");
+                        if (dbDate != null) fecha = dbDate.toLocalDate();
+                        total = rs.getDouble("total");
+                        tipoCliente = rs.getString("tipo_cliente");
+                        pedidoId = rs.getInt("pedido_id");
+                        
+                        if ("PARTICULAR".equalsIgnoreCase(tipoCliente)) {
+                            nombreCli = rs.getString("nombre") + " " + rs.getString("apellido");
+                            documento = rs.getString("nro_doc");
+                        } else {
+                            nombreCli = rs.getString("razon_social");
+                            documento = rs.getString("cuit");
+                        }
+                        
+                        String calle = rs.getString("calle");
+                        int num = rs.getInt("numeracion");
+                        if (calle != null) {
+                            domicilio = calle + " " + num;
+                        }
+                        
+                        localidad = rs.getString("barrio_nombre");
+                        if (localidad == null) localidad = "CÃƒÂ³rdoba";
+                    }
+                }
+            }
+            
+            if (pedidoId != -1) {
+                // Now get items
+                java.util.List<com.mycompany.vitalsa.dto.FacturaItemDTO> items = new java.util.ArrayList<>();
+                String sqlItems = 
+                    "SELECT dp.cantidad, pr.precio, p.nombre AS categoria, pr.descripcion " +
+                    "FROM detalle_pedido dp " +
+                    "JOIN presentacion pr ON dp.presentacion_id = pr.id " +
+                    "JOIN producto p ON pr.producto_id = p.id " +
+                    "WHERE dp.pedido_id = ?";
+                    
+                try (java.sql.PreparedStatement ps = conexion.prepareStatement(sqlItems)) {
+                    ps.setInt(1, pedidoId);
+                    try (java.sql.ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            int cant = rs.getInt("cantidad");
+                            double precio = rs.getDouble("precio");
+                            String desc = rs.getString("categoria") + " - " + rs.getString("descripcion");
+                            items.add(new com.mycompany.vitalsa.dto.FacturaItemDTO(
+                                "PRD", desc, cant, precio, cant * precio
+                            ));
+                        }
+                    }
+                }
+                
+                String tipoComprobante = "PARTICULAR".equalsIgnoreCase(tipoCliente) ? "B" : "A";
+                String condicionIva = "PARTICULAR".equalsIgnoreCase(tipoCliente) ? "Consumidor Final" : "Responsable Inscripto";
+                String skuFactura = String.format("#F-2024-%04d", facturaId);
+                
+                dto = new com.mycompany.vitalsa.dto.FacturaCompletaDTO(
+                    skuFactura, fecha, tipoComprobante, nombreCli, domicilio, localidad, condicionIva, documento, items, total
+                );
+            }
+            
+        } catch (java.sql.SQLException e) {
+            System.err.println("Error al obtener detalle de factura: " + e.getMessage());
+        }
+        return dto;
     }
 }

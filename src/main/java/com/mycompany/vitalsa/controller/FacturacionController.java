@@ -49,7 +49,7 @@ public class FacturacionController {
         
         // Llenamos el ComboBox con las opciones por defecto
         cmbMetodoPago.setItems(FXCollections.observableArrayList(
-            "Transferencia Bancaria", "Efectivo", "Tarjeta de Crédito", "Mercado Pago"
+            "Transferencia Bancaria", "Efectivo", "Tarjeta de CrÃ©dito", "Mercado Pago"
         ));
         cmbMetodoPago.getSelectionModel().selectFirst();
         
@@ -197,12 +197,12 @@ public class FacturacionController {
         tablaFacturas.setItems(filtrados);
     }
 
-    // Cuando tocan el botón de "Registrar Pago" (acá deberíamos validar con AFIP jaja)
+    // Cuando tocan el botÃ³n de "Registrar Pago" (acÃ¡ deberÃ­amos validar con AFIP jaja)
     @FXML
     public void procesarPago(ActionEvent event) {
         String input = txtBuscadorFactura.getText().trim();
         if (input.isEmpty()) {
-            mostrarAlerta("Atención", "Debe ingresar o seleccionar un número de factura.", Alert.AlertType.WARNING);
+            mostrarAlerta("AtenciÃ³n", "Debe ingresar o seleccionar un nÃºmero de factura.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -214,14 +214,14 @@ public class FacturacionController {
             txtBuscadorFactura.clear();
             cargarDatos(); // Refrescar UI
         } else {
-            mostrarAlerta("Error", "No se encontró la factura o ya está pagada.", Alert.AlertType.ERROR);
+            mostrarAlerta("Error", "No se encontrÃ³ la factura o ya estÃ¡ pagada.", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     public void generarResumenDiario(ActionEvent event) {
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle("Guardar Reporte de Facturación");
+        fileChooser.setTitle("Guardar Reporte de FacturaciÃ³n");
         fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Archivo PDF", "*.pdf"));
         fileChooser.setInitialFileName("reporte_facturacion.pdf");
         
@@ -252,7 +252,7 @@ public class FacturacionController {
                 document.add(table);
                 document.close();
                 
-                mostrarAlerta("Éxito", "Reporte exportado correctamente a PDF.", Alert.AlertType.INFORMATION);
+                mostrarAlerta("Ã‰xito", "Reporte exportado correctamente a PDF.", Alert.AlertType.INFORMATION);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 mostrarAlerta("Error", "No se pudo generar el PDF: " + ex.getMessage(), Alert.AlertType.ERROR);
@@ -261,36 +261,151 @@ public class FacturacionController {
     }
 
     // Magia negra con iText para escupir el PDF de la factura
+    // Magia negra con iText para escupir el PDF de la factura (Estilo AFIP)
     private void generarFacturaPdf(FacturaRecienteDTO data) {
+        FacturaCompletaDTO facturaCompleta = dbController.obtenerDetalleCompletoFactura(data.getId());
+        if (facturaCompleta == null) {
+            mostrarAlerta("Error", "No se pudo recuperar el detalle de la factura.", Alert.AlertType.ERROR);
+            return;
+        }
+
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle("Guardar Factura " + data.getSku());
+        fileChooser.setTitle("Guardar Factura " + facturaCompleta.getSkuFactura());
         fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Archivo PDF", "*.pdf"));
-        fileChooser.setInitialFileName("Factura_" + data.getSku() + ".pdf");
+        fileChooser.setInitialFileName("Factura_" + facturaCompleta.getSkuFactura() + ".pdf");
         
         java.io.File file = fileChooser.showSaveDialog(tablaFacturas.getScene().getWindow());
         if (file != null) {
             try {
-                com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+                com.itextpdf.text.Document document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4, 36, 36, 54, 36);
                 com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(file));
                 document.open();
                 
-                com.itextpdf.text.Font titleFont = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA_BOLD, 22);
-                com.itextpdf.text.Font subtitleFont = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA_BOLD, 14);
-                com.itextpdf.text.Font normalFont = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA, 12);
+                com.itextpdf.text.Font fontTitle = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA_BOLD, 18);
+                com.itextpdf.text.Font fontBold = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA_BOLD, 10);
+                com.itextpdf.text.Font fontNormal = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA, 10);
+                com.itextpdf.text.Font fontSmall = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA, 8);
+                com.itextpdf.text.Font fontLetra = com.itextpdf.text.FontFactory.getFont(com.itextpdf.text.FontFactory.HELVETICA_BOLD, 24);
+
+                // --- HEADER ---
+                com.itextpdf.text.pdf.PdfPTable headerTable = new com.itextpdf.text.pdf.PdfPTable(3);
+                headerTable.setWidthPercentage(100);
+                headerTable.setWidths(new float[]{45f, 10f, 45f});
                 
-                document.add(new com.itextpdf.text.Paragraph("FACTURA COMERCIAL", titleFont));
-                document.add(new com.itextpdf.text.Paragraph(" "));
+                // Empresa
+                com.itextpdf.text.pdf.PdfPCell cellEmpresa = new com.itextpdf.text.pdf.PdfPCell();
+                cellEmpresa.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+                cellEmpresa.addElement(new com.itextpdf.text.Paragraph("VITALSA S.A.", fontTitle));
+                cellEmpresa.addElement(new com.itextpdf.text.Paragraph("Distribuidora de Insumos", fontNormal));
+                cellEmpresa.addElement(new com.itextpdf.text.Paragraph("Dir: Av. ColÃ³n 1234, CÃ³rdoba", fontSmall));
+                cellEmpresa.addElement(new com.itextpdf.text.Paragraph("IVA: Responsable Inscripto", fontSmall));
+                headerTable.addCell(cellEmpresa);
                 
-                document.add(new com.itextpdf.text.Paragraph("Nro. Factura: " + data.getSku(), subtitleFont));
-                document.add(new com.itextpdf.text.Paragraph("Cliente: " + data.getClienteNombre(), normalFont));
-                document.add(new com.itextpdf.text.Paragraph("Estado: " + data.getEstado(), normalFont));
-                document.add(new com.itextpdf.text.Paragraph("Fecha de Emisión: " + java.time.LocalDate.now().toString(), normalFont));
-                document.add(new com.itextpdf.text.Paragraph(" "));
-                document.add(new com.itextpdf.text.Paragraph("---------------------------------------------------------"));
+                // Letra
+                com.itextpdf.text.pdf.PdfPCell cellLetra = new com.itextpdf.text.pdf.PdfPCell();
+                cellLetra.setBorder(com.itextpdf.text.Rectangle.BOX);
+                cellLetra.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                cellLetra.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+                cellLetra.setPadding(5);
+                com.itextpdf.text.Paragraph pLetra = new com.itextpdf.text.Paragraph(facturaCompleta.getTipoComprobante(), fontLetra);
+                pLetra.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                cellLetra.addElement(pLetra);
+                headerTable.addCell(cellLetra);
+                
+                // Datos Comprobante
+                com.itextpdf.text.pdf.PdfPCell cellComprobante = new com.itextpdf.text.pdf.PdfPCell();
+                cellComprobante.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+                cellComprobante.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                com.itextpdf.text.Paragraph pComp = new com.itextpdf.text.Paragraph("FACTURA", fontTitle);
+                pComp.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                cellComprobante.addElement(pComp);
+                com.itextpdf.text.Paragraph pNum = new com.itextpdf.text.Paragraph("NÂº " + facturaCompleta.getSkuFactura(), fontBold);
+                pNum.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                cellComprobante.addElement(pNum);
+                com.itextpdf.text.Paragraph pFec = new com.itextpdf.text.Paragraph("FECHA: " + facturaCompleta.getFechaEmision().toString(), fontBold);
+                pFec.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                cellComprobante.addElement(pFec);
+                headerTable.addCell(cellComprobante);
+                
+                document.add(headerTable);
+                document.add(new com.itextpdf.text.Paragraph(" ")); // Spacer
+                
+                // --- DATOS CLIENTE ---
+                com.itextpdf.text.pdf.PdfPTable clienteTable = new com.itextpdf.text.pdf.PdfPTable(2);
+                clienteTable.setWidthPercentage(100);
+                clienteTable.setSpacingBefore(10f);
+                
+                com.itextpdf.text.pdf.PdfPCell cellCliLeft = new com.itextpdf.text.pdf.PdfPCell();
+                cellCliLeft.setBorder(com.itextpdf.text.Rectangle.TOP | com.itextpdf.text.Rectangle.LEFT | com.itextpdf.text.Rectangle.BOTTOM);
+                cellCliLeft.setPadding(8);
+                cellCliLeft.addElement(new com.itextpdf.text.Paragraph("SEÃ‘OR/ES: " + facturaCompleta.getClienteNombre(), fontBold));
+                cellCliLeft.addElement(new com.itextpdf.text.Paragraph("DOMICILIO: " + facturaCompleta.getClienteDomicilio(), fontNormal));
+                clienteTable.addCell(cellCliLeft);
+                
+                com.itextpdf.text.pdf.PdfPCell cellCliRight = new com.itextpdf.text.pdf.PdfPCell();
+                cellCliRight.setBorder(com.itextpdf.text.Rectangle.TOP | com.itextpdf.text.Rectangle.RIGHT | com.itextpdf.text.Rectangle.BOTTOM);
+                cellCliRight.setPadding(8);
+                cellCliRight.addElement(new com.itextpdf.text.Paragraph("IVA: " + facturaCompleta.getCondicionIva(), fontBold));
+                cellCliRight.addElement(new com.itextpdf.text.Paragraph("CUIT/DNI: " + facturaCompleta.getCuitODni(), fontNormal));
+                cellCliRight.addElement(new com.itextpdf.text.Paragraph("LOCALIDAD: " + facturaCompleta.getClienteLocalidad(), fontNormal));
+                clienteTable.addCell(cellCliRight);
+                
+                document.add(clienteTable);
+                document.add(new com.itextpdf.text.Paragraph(" ")); // Spacer
+                
+                // --- TABLA ITEMS ---
+                com.itextpdf.text.pdf.PdfPTable itemsTable = new com.itextpdf.text.pdf.PdfPTable(4);
+                itemsTable.setWidthPercentage(100);
+                itemsTable.setWidths(new float[]{55f, 10f, 15f, 20f});
+                itemsTable.setSpacingBefore(10f);
+                
+                String[] headers = {"DescripciÃ³n", "Cant.", "Precio Uni.", "Sub Total"};
+                for (String h : headers) {
+                    com.itextpdf.text.pdf.PdfPCell headerCell = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(h, fontBold));
+                    headerCell.setBackgroundColor(com.itextpdf.text.BaseColor.LIGHT_GRAY);
+                    headerCell.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                    headerCell.setPadding(5);
+                    itemsTable.addCell(headerCell);
+                }
+                
+                for (FacturaItemDTO item : facturaCompleta.getItems()) {
+                    com.itextpdf.text.pdf.PdfPCell cDesc = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(item.getDescripcion(), fontNormal));
+                    com.itextpdf.text.pdf.PdfPCell cCant = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(String.valueOf(item.getCantidad()), fontNormal));
+                    cCant.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                    com.itextpdf.text.pdf.PdfPCell cPrecio = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(String.format("$%,.2f", item.getPrecioUnitario()), fontNormal));
+                    cPrecio.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                    com.itextpdf.text.pdf.PdfPCell cSubt = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(String.format("$%,.2f", item.getSubtotal()), fontNormal));
+                    cSubt.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                    
+                    cDesc.setPadding(5); cCant.setPadding(5); cPrecio.setPadding(5); cSubt.setPadding(5);
+                    itemsTable.addCell(cDesc); itemsTable.addCell(cCant); itemsTable.addCell(cPrecio); itemsTable.addCell(cSubt);
+                }
+                
+                document.add(itemsTable);
+                document.add(new com.itextpdf.text.Paragraph(" ")); // Spacer
+                
+                // --- TOTAL ---
+                com.itextpdf.text.pdf.PdfPTable totalTable = new com.itextpdf.text.pdf.PdfPTable(2);
+                totalTable.setWidthPercentage(100);
+                totalTable.setWidths(new float[]{80f, 20f});
+                
+                com.itextpdf.text.pdf.PdfPCell cTotalLabel = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("SUBTOTAL:", fontBold));
+                cTotalLabel.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+                cTotalLabel.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                cTotalLabel.setPadding(8);
+                totalTable.addCell(cTotalLabel);
+                
+                com.itextpdf.text.pdf.PdfPCell cTotalValue = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(String.format("$%,.2f", facturaCompleta.getTotal()), fontBold));
+                cTotalValue.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+                cTotalValue.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+                cTotalValue.setPadding(8);
+                totalTable.addCell(cTotalValue);
+                
+                document.add(totalTable);
                 
                 document.close();
                 
-                mostrarAlerta("Éxito", "Factura " + data.getSku() + " exportada correctamente a PDF.", Alert.AlertType.INFORMATION);
+                mostrarAlerta("Ã‰xito", "Factura " + facturaCompleta.getSkuFactura() + " exportada correctamente con el nuevo diseÃ±o.", Alert.AlertType.INFORMATION);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 mostrarAlerta("Error", "No se pudo generar la Factura PDF: " + ex.getMessage(), Alert.AlertType.ERROR);

@@ -12,10 +12,6 @@ import java.util.List;
 public class CalculoEstandarStrategy implements ICalculoTotalStrategy {
     @Override
     public double calcularTotal(List<DetallePedidoDTO> carrito) {
-        double total = 0;
-        for (DetallePedidoDTO d : carrito) {
-            total += (d.getPrecioUnitario() * d.getCantidad());
-        }
-        return total;
+        return calcularSubtotal(carrito);
     }
 }

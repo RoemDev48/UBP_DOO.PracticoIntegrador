@@ -1,4 +1,4 @@
-﻿package com.mycompany.vitalsa.model;
+package com.mycompany.vitalsa.model;
 
 /**
  *

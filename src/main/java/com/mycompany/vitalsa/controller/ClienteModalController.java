@@ -116,10 +116,26 @@ public class ClienteModalController implements Initializable {
         }
 
         int zonaId = cmbZona.getValue().getId();
+        
+        com.mycompany.vitalsa.model.Telefono telefono = new com.mycompany.vitalsa.model.Telefono(0, tel, tipoTel);
+        com.mycompany.vitalsa.model.Direccion direccion = new com.mycompany.vitalsa.model.Direccion(0, dir, numCalle, null);
+        com.mycompany.vitalsa.model.Cliente nuevoCliente;
+        
+        if ("PARTICULAR".equals(tipo)) {
+            nuevoCliente = new com.mycompany.vitalsa.model.ClienteParticular(
+                clienteEdicion != null ? clienteEdicion.getId() : 0, 
+                direccion, telefono, null, nombre, "", null, doc
+            );
+        } else {
+            nuevoCliente = new com.mycompany.vitalsa.model.ClienteEmpresa(
+                clienteEdicion != null ? clienteEdicion.getId() : 0, 
+                direccion, telefono, null, "", nombre, doc
+            );
+        }
 
         if (clienteEdicion == null) {
             // Alta
-            boolean exito = dbController.insertarCliente(tipo, nombre, doc, dir, numCalle, zonaId, tel, tipoTel);
+            boolean exito = dbController.insertarCliente(nuevoCliente, zonaId);
             if (exito) {
                 guardadoExitoso = true;
                 cerrar();
@@ -128,7 +144,7 @@ public class ClienteModalController implements Initializable {
             }
         } else {
             // Edición
-            boolean exito = dbController.actualizarCliente(clienteEdicion.getId(), tipo, nombre, doc, dir, numCalle, zonaId, tel, tipoTel);
+            boolean exito = dbController.actualizarCliente(nuevoCliente, zonaId);
             if (exito) {
                 guardadoExitoso = true;
                 cerrar();

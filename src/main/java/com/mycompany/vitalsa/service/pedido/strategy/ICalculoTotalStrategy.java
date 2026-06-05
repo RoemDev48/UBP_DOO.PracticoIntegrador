@@ -11,4 +11,12 @@ import java.util.List;
 // Interfaz para enchufarle distintas formas de calcular el precio final (así no llenamos de ifs el código principal)
 public interface ICalculoTotalStrategy {
     double calcularTotal(List<DetallePedidoDTO> carrito);
+
+    default double calcularSubtotal(List<DetallePedidoDTO> carrito) {
+        double subtotal = 0;
+        for (DetallePedidoDTO d : carrito) {
+            subtotal += (d.getPrecioUnitario() * d.getCantidad());
+        }
+        return subtotal;
+    }
 }

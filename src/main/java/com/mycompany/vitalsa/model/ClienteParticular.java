@@ -1,13 +1,7 @@
-﻿package com.mycompany.vitalsa.model;
+package com.mycompany.vitalsa.model;
 
 import java.util.List;
 
-/**
- *
- * @author RRDev
-*/
-
-// Objeto del dominio que representa a un ClienteParticular dentro del sistema
 public class ClienteParticular extends Cliente {
     private String nombre;
     private String apellido;
@@ -25,4 +19,16 @@ public class ClienteParticular extends Cliente {
         this.tipoDoc = tipoDoc;
         this.nroDoc = nroDoc;
     }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+
+    public TipoDocumento getTipoDoc() { return tipoDoc; }
+    public void setTipoDoc(TipoDocumento tipoDoc) { this.tipoDoc = tipoDoc; }
+
+    public String getNroDoc() { return nroDoc; }
+    public void setNroDoc(String nroDoc) { this.nroDoc = nroDoc; }
 }

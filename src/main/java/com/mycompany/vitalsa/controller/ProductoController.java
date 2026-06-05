@@ -180,7 +180,7 @@ public class ProductoController implements Initializable {
     }
     
     // Abre el modal cortito que solo cambia el precio
-    public void abrirModalPrecio(ProductoDTO producto) {
+    private void abrirModalPrecio(ProductoDTO producto) {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/mycompany/vitalsa/view/producto/PrecioModalView.fxml"));
             javafx.scene.Parent root = loader.load();

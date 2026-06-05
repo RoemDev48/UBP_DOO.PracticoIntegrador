@@ -1,13 +1,7 @@
-﻿package com.mycompany.vitalsa.model;
+package com.mycompany.vitalsa.model;
 
 import java.util.List;
 
-/**
- *
- * @author RRDev
-*/
-
-// Objeto del dominio que representa a un ClienteEmpresa dentro del sistema
 public class ClienteEmpresa extends Cliente {
     private String nombreFantasia;
     private String razonSocial;
@@ -23,4 +17,13 @@ public class ClienteEmpresa extends Cliente {
         this.razonSocial = razonSocial;
         this.cuit = cuit;
     }
+
+    public String getNombreFantasia() { return nombreFantasia; }
+    public void setNombreFantasia(String nombreFantasia) { this.nombreFantasia = nombreFantasia; }
+
+    public String getRazonSocial() { return razonSocial; }
+    public void setRazonSocial(String razonSocial) { this.razonSocial = razonSocial; }
+
+    public String getCuit() { return cuit; }
+    public void setCuit(String cuit) { this.cuit = cuit; }
 }
